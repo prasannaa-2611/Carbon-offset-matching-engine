@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Carbon Offset Marketplace
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- Navigation Bar -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+
+            Carbon<span>Match</span>
+
+        </div>
+
+
+        <div class="nav-links">
+
+            <a href="#">
+                Home
+            </a>
+
+            <a href="#marketplace">
+                Marketplace
+            </a>
+
+            <a href="#matching">
+                Find Match
+            </a>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- Hero Section -->
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <p class="tagline">
+                CARBON OFFSET MARKETPLACE
+            </p>
+
+
+            <h1>
+
+                Find the right
+
+                <span>
+                    carbon projects
+                </span>
+
+            </h1>
+
+
+            <p class="hero-text">
+
+                Match your carbon offset requirements
+                with suitable verified carbon projects
+                using our intelligent matching engine.
+
+            </p>
+
+
+            <a
+                href="#matching"
+                class="hero-button"
+            >
+                Find Carbon Credits
+            </a>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- Matching Section -->
+
+    <section
+        id="matching"
+        class="matching-section"
+    >
+
+        <div class="section-heading">
+
+            <p class="small-title">
+                MATCHING ENGINE
+            </p>
+
+
+            <h2>
+                Find Your Carbon Offset
+            </h2>
+
+
+            <p>
+
+                Enter your requirements and our
+                algorithm will find suitable
+                carbon projects.
+
+            </p>
+
+        </div>
+
+
+
+        <div class="matching-card">
+
+
+            <!-- Required Credits -->
+
+            <div class="input-group">
+
+                <label for="credits">
+
+                    Required Carbon Credits
+
+                </label>
+
+
+                <input
+                    type="number"
+                    id="credits"
+                    placeholder="Example: 500"
+                    min="1"
+                >
+
+            </div>
+
+
+
+            <!-- Maximum Price -->
+
+            <div class="input-group">
+
+                <label for="price">
+
+                    Maximum Price Per Credit
+
+                </label>
+
+
+                <input
+                    type="number"
+                    id="price"
+                    placeholder="Example: 500"
+                    min="1"
+                    step="0.01"
+                >
+
+            </div>
+
+
+
+            <!-- Project Type -->
+
+            <div class="input-group">
+
+                <label for="type">
+
+                    Preferred Project Type
+
+                </label>
+
+
+                <select id="type">
+
+                    <option value="">
+
+                        Select Project Type
+
+                    </option>
+
+
+                    <option value="Renewable Energy">
+
+                        Renewable Energy
+
+                    </option>
+
+
+                    <option value="Forestry">
+
+                        Forestry
+
+                    </option>
+
+
+                    <option value="Agriculture">
+
+                        Agriculture
+
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <!-- Location -->
+
+            <div class="input-group">
+
+                <label for="location">
+
+                    Preferred Location
+
+                </label>
+
+
+                <select id="location">
+
+                    <option value="">
+
+                        Select Location
+
+                    </option>
+
+
+                    <option value="India">
+
+                        India
+
+                    </option>
+
+
+                    <option value="Brazil">
+
+                        Brazil
+
+                    </option>
+
+
+                    <option value="USA">
+
+                        USA
+
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <!-- NEW SORT OPTION -->
+
+            <div class="input-group">
+
+                <label for="sort">
+
+                    Sort Results By
+
+                </label>
+
+
+                <select id="sort">
+
+                    <option value="score">
+
+                        Match Score — Highest First
+
+                    </option>
+
+
+                    <option value="price">
+
+                        Lowest Price
+
+                    </option>
+
+
+                    <option value="credits">
+
+                        Highest Credits
+
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <!-- Find Button -->
+
+            <button onclick="findMatches()">
+
+                Find Matching Projects
+
+            </button>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- Marketplace -->
+
+    <section
+        id="marketplace"
+        class="marketplace"
+    >
+
+        <div class="section-heading">
+
+            <p class="small-title">
+
+                CARBON MARKETPLACE
+
+            </p>
+
+
+            <h2>
+
+                Available Projects
+
+            </h2>
+
+        </div>
+
+
+
+        <div class="project-grid">
+
+
+            <!-- Solar Gujarat -->
+
+            <div class="project-card">
+
+                <div class="project-icon">
+                    ☀️
+                </div>
+
+
+                <h3>
+                    Solar Gujarat
+                </h3>
+
+
+                <p>
+                    Renewable Energy • India
+                </p>
+
+
+                <div class="project-info">
+
+                    <span>
+                        1,000 Credits
+                    </span>
+
+
+                    <strong>
+                        ₹450
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Wind Tamil Nadu -->
+
+            <div class="project-card">
+
+                <div class="project-icon">
+                    💨
+                </div>
+
+
+                <h3>
+                    Wind Tamil Nadu
+                </h3>
+
+
+                <p>
+                    Renewable Energy • India
+                </p>
+
+
+                <div class="project-info">
+
+                    <span>
+                        2,000 Credits
+                    </span>
+
+
+                    <strong>
+                        ₹420
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Forest Karnataka -->
+
+            <div class="project-card">
+
+                <div class="project-icon">
+                    🌳
+                </div>
+
+
+                <h3>
+                    Forest Karnataka
+                </h3>
+
+
+                <p>
+                    Forestry • India
+                </p>
+
+
+                <div class="project-info">
+
+                    <span>
+                        500 Credits
+                    </span>
+
+
+                    <strong>
+                        ₹380
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Solar Rajasthan -->
+
+            <div class="project-card">
+
+                <div class="project-icon">
+                    ☀️
+                </div>
+
+
+                <h3>
+                    Solar Rajasthan
+                </h3>
+
+
+                <p>
+                    Renewable Energy • India
+                </p>
+
+
+                <div class="project-info">
+
+                    <span>
+                        800 Credits
+                    </span>
+
+
+                    <strong>
+                        ₹470
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- Footer -->
+
+    <footer>
+
+        <div class="logo">
+
+            Carbon<span>Match</span>
+
+        </div>
+
+
+        <p>
+
+            Carbon Offset Marketplace
+            Matching Engine
+
+        </p>
+
+    </footer>
+
+
+
+    <!-- JavaScript -->
+
+    <script>
+
+        function findMatches() {
+
+
+            // =====================================
+            // GET USER INPUT
+            // =====================================
+
+            const credits =
+                document.getElementById(
+                    "credits"
+                ).value;
+
+
+            const price =
+                document.getElementById(
+                    "price"
+                ).value;
+
+
+            const type =
+                document.getElementById(
+                    "type"
+                ).value;
+
+
+            const location =
+                document.getElementById(
+                    "location"
+                ).value;
+
+
+            const sort =
+                document.getElementById(
+                    "sort"
+                ).value;
+
+
+
+            // =====================================
+            // VALIDATION
+            // =====================================
+
+            if (
+                !credits ||
+                !price ||
+                !type ||
+                !location
+            ) {
+
+                alert(
+                    "Please fill in all fields."
+                );
+
+                return;
+            }
+
+
+            if (
+                Number(credits) <= 0
+            ) {
+
+                alert(
+                    "Credits must be greater than 0."
+                );
+
+                return;
+            }
+
+
+            if (
+                Number(price) <= 0
+            ) {
+
+                alert(
+                    "Price must be greater than 0."
+                );
+
+                return;
+            }
+
+
+
+            // =====================================
+            // CREATE FORM DATA
+            // =====================================
+
+            const formData =
+                new URLSearchParams();
+
+
+            formData.append(
+                "credits",
+                credits
+            );
+
+
+            formData.append(
+                "price",
+                price
+            );
+
+
+            formData.append(
+                "type",
+                type
+            );
+
+
+            formData.append(
+                "location",
+                location
+            );
+
+
+            formData.append(
+                "sort",
+                sort
+            );
+
+
+
+            // =====================================
+            // SEND REQUEST TO JAVA SERVER
+            // =====================================
+
+            fetch(
+                "/api/match",
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/x-www-form-urlencoded"
+
+                    },
+
+                    body:
+                        formData.toString()
+
+                }
+            )
+
+
+            // =====================================
+            // SERVER RESPONSE
+            // =====================================
+
+            .then(
+                response => {
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            "Server error: "
+                            + response.status
+                        );
+
+                    }
+
+                    return response.text();
+
+                }
+            )
+
+
+            // =====================================
+            // DISPLAY RESULTS
+            // =====================================
+
+            .then(
+                html => {
+
+                    document.open();
+
+                    document.write(html);
+
+                    document.close();
+
+                }
+            )
+
+
+            // =====================================
+            // ERROR HANDLING
+            // =====================================
+
+            .catch(
+                error => {
+
+                    console.error(error);
+
+                    alert(
+                        "Could not connect to the Java server."
+                    );
+
+                }
+            );
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>

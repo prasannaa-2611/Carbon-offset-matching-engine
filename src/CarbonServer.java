@@ -33,6 +33,10 @@ public class CarbonServer {
         server.start();
     }
 
+    // =========================
+    // SERVE WEBSITE FILES
+    // =========================
+
     private static void handleRequest(HttpExchange exchange)
             throws IOException {
 
@@ -48,10 +52,13 @@ public class CarbonServer {
 
             String response = "404 - Page Not Found";
 
-            exchange.sendResponseHeaders(404, response.length());
+            byte[] bytes =
+                    response.getBytes(StandardCharsets.UTF_8);
+
+            exchange.sendResponseHeaders(404, bytes.length);
 
             try (OutputStream os = exchange.getResponseBody()) {
-                os.write(response.getBytes(StandardCharsets.UTF_8));
+                os.write(bytes);
             }
 
             return;
@@ -64,11 +71,15 @@ public class CarbonServer {
 
         if (path.endsWith(".css")) {
             contentType = "text/css";
-        } else if (path.endsWith(".js")) {
+        }
+        else if (path.endsWith(".js")) {
             contentType = "application/javascript";
-        } else if (path.endsWith(".png")) {
+        }
+        else if (path.endsWith(".png")) {
             contentType = "image/png";
-        } else if (path.endsWith(".jpg") || path.endsWith(".jpeg")) {
+        }
+        else if (path.endsWith(".jpg")
+                || path.endsWith(".jpeg")) {
             contentType = "image/jpeg";
         }
 
@@ -77,24 +88,38 @@ public class CarbonServer {
                 contentType
         );
 
-        exchange.sendResponseHeaders(200, response.length);
+        exchange.sendResponseHeaders(
+                200,
+                response.length
+        );
 
         try (OutputStream os = exchange.getResponseBody()) {
             os.write(response);
         }
     }
 
+    // =========================
+    // MATCHING API
+    // =========================
+
     private static void handleMatch(HttpExchange exchange)
             throws IOException {
 
-        if (!exchange.getRequestMethod().equalsIgnoreCase("POST")) {
+        if (!exchange.getRequestMethod()
+                .equalsIgnoreCase("POST")) {
 
             String response = "Method Not Allowed";
 
-            exchange.sendResponseHeaders(405, response.length());
+            byte[] bytes =
+                    response.getBytes(StandardCharsets.UTF_8);
+
+            exchange.sendResponseHeaders(
+                    405,
+                    bytes.length
+            );
 
             try (OutputStream os = exchange.getResponseBody()) {
-                os.write(response.getBytes(StandardCharsets.UTF_8));
+                os.write(bytes);
             }
 
             return;
@@ -102,18 +127,65 @@ public class CarbonServer {
 
         try {
 
+            // Read request body
             String body = new String(
                     exchange.getRequestBody().readAllBytes(),
                     StandardCharsets.UTF_8
             );
 
-            System.out.println("Received request: " + body);
+            System.out.println(
+                    "Received request: " + body
+            );
 
-            int credits = getInt(body, "credits");
-            double price = getDouble(body, "price");
-            String type = getString(body, "type");
-            String location = getString(body, "location");
-            String sort = getString(body, "sort");
+            // Read form values
+            int credits = getInt(
+                    body,
+                    "credits"
+            );
+
+            double price = getDouble(
+                    body,
+                    "price"
+            );
+
+            String type = getString(
+                    body,
+                    "type"
+            );
+
+            String location = getString(
+                    body,
+                    "location"
+            );
+
+            String sort = getString(
+                    body,
+                    "sort"
+            );
+
+            System.out.println(
+                    "Credits: " + credits
+            );
+
+            System.out.println(
+                    "Price: " + price
+            );
+
+            System.out.println(
+                    "Type: " + type
+            );
+
+            System.out.println(
+                    "Location: " + location
+            );
+
+            System.out.println(
+                    "Sort: " + sort
+            );
+
+            // =========================
+            // FIND MATCHES
+            // =========================
 
             PriorityQueue<MatchingEngine.Match> matches =
                     MatchingEngine.findMatches(
@@ -123,18 +195,31 @@ public class CarbonServer {
                             location
                     );
 
-            matches = MatchingEngine.sortMatches(matches, sort);
+            // Sort results
+            matches =
+                    MatchingEngine.sortMatches(
+                            matches,
+                            sort
+                    );
 
-            StringBuilder json = new StringBuilder();
+            // =========================
+            // CREATE JSON RESPONSE
+            // =========================
+
+            StringBuilder json =
+                    new StringBuilder();
 
             json.append("{\"matches\":[");
 
             boolean first = true;
+
             int count = 0;
 
-            while (!matches.isEmpty() && count < 10) {
+            while (!matches.isEmpty()
+                    && count < 10) {
 
-                MatchingEngine.Match match = matches.poll();
+                MatchingEngine.Match match =
+                        matches.poll();
 
                 if (!first) {
                     json.append(",");
@@ -145,43 +230,69 @@ public class CarbonServer {
                 json.append("{");
 
                 json.append("\"projectName\":\"")
-                        .append(escapeJson(match.getProjectName()))
+                        .append(
+                                escapeJson(
+                                        match.getProjectName()
+                                )
+                        )
                         .append("\",");
 
                 json.append("\"projectType\":\"")
-                        .append(escapeJson(match.getProjectType()))
+                        .append(
+                                escapeJson(
+                                        match.getProjectType()
+                                )
+                        )
                         .append("\",");
 
                 json.append("\"location\":\"")
-                        .append(escapeJson(match.getLocation()))
+                        .append(
+                                escapeJson(
+                                        match.getLocation()
+                                )
+                        )
                         .append("\",");
 
                 json.append("\"credits\":")
-                        .append(match.getCredits())
+                        .append(
+                                match.getCredits()
+                        )
                         .append(",");
 
                 json.append("\"price\":")
-                        .append(match.getPrice())
+                        .append(
+                                match.getPrice()
+                        )
                         .append(",");
 
                 json.append("\"typeScore\":")
-                        .append(match.getTypeScore())
+                        .append(
+                                match.getTypeScore()
+                        )
                         .append(",");
 
                 json.append("\"locationScore\":")
-                        .append(match.getLocationScore())
+                        .append(
+                                match.getLocationScore()
+                        )
                         .append(",");
 
                 json.append("\"priceScore\":")
-                        .append(match.getPriceScore())
+                        .append(
+                                match.getPriceScore()
+                        )
                         .append(",");
 
                 json.append("\"availabilityScore\":")
-                        .append(match.getAvailabilityScore())
+                        .append(
+                                match.getAvailabilityScore()
+                        )
                         .append(",");
 
                 json.append("\"score\":")
-                        .append(match.getScore());
+                        .append(
+                                match.getScore()
+                        );
 
                 json.append("}");
 
@@ -190,79 +301,94 @@ public class CarbonServer {
 
             json.append("]}");
 
-            sendJson(exchange, 200, json.toString());
+            // Send response
+            sendJson(
+                    exchange,
+                    200,
+                    json.toString()
+            );
 
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
 
             e.printStackTrace();
 
             String error =
                     "{\"error\":\"Server error while finding matches\"}";
 
-            sendJson(exchange, 500, error);
+            sendJson(
+                    exchange,
+                    500,
+                    error
+            );
         }
     }
 
-    private static int getInt(String json, String key) {
+    // =========================
+    // READ INTEGER
+    // =========================
 
-        String value = getString(json, key);
+    private static int getInt(
+            String data,
+            String key) {
+
+        String value =
+                getString(data, key);
 
         return Integer.parseInt(value);
     }
 
-    private static double getDouble(String json, String key) {
+    // =========================
+    // READ DOUBLE
+    // =========================
 
-        String value = getString(json, key);
+    private static double getDouble(
+            String data,
+            String key) {
+
+        String value =
+                getString(data, key);
 
         return Double.parseDouble(value);
     }
 
-    private static String getString(String json, String key) {
+    // =========================
+    // READ FORM DATA
+    // =========================
 
-        String search = "\"" + key + "\":";
+    private static String getString(
+            String data,
+            String key) {
 
-        int start = json.indexOf(search);
+        String[] pairs =
+                data.split("&");
 
-        if (start == -1) {
-            return "";
-        }
+        for (String pair : pairs) {
 
-        start += search.length();
+            String[] parts =
+                    pair.split("=", 2);
 
-        while (start < json.length()
-                && Character.isWhitespace(json.charAt(start))) {
-            start++;
-        }
+            if (parts.length == 2
+                    && parts[0].equals(key)) {
 
-        if (start < json.length()
-                && json.charAt(start) == '"') {
-
-            start++;
-
-            int end = json.indexOf("\"", start);
-
-            if (end == -1) {
-                return "";
+                return parts[1]
+                        .replace("+", " ")
+                        .replace("%20", " ");
             }
-
-            return json.substring(start, end);
         }
 
-        int end = start;
-
-        while (end < json.length()
-                && json.charAt(end) != ','
-                && json.charAt(end) != '}') {
-            end++;
-        }
-
-        return json.substring(start, end).trim();
+        return "";
     }
+
+    // =========================
+    // SEND JSON
+    // =========================
 
     private static void sendJson(
             HttpExchange exchange,
             int status,
-            String json) throws IOException {
+            String json)
+            throws IOException {
 
         exchange.getResponseHeaders().set(
                 "Content-Type",
@@ -270,19 +396,28 @@ public class CarbonServer {
         );
 
         byte[] response =
-                json.getBytes(StandardCharsets.UTF_8);
+                json.getBytes(
+                        StandardCharsets.UTF_8
+                );
 
         exchange.sendResponseHeaders(
                 status,
                 response.length
         );
 
-        try (OutputStream os = exchange.getResponseBody()) {
+        try (OutputStream os =
+                     exchange.getResponseBody()) {
+
             os.write(response);
         }
     }
 
-    private static String escapeJson(String value) {
+    // =========================
+    // ESCAPE JSON
+    // =========================
+
+    private static String escapeJson(
+            String value) {
 
         if (value == null) {
             return "";

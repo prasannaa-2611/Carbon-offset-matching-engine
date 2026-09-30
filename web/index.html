@@ -1,538 +1,1098 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Carbon Offset Matching Engine</title>
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Carbon Offset Marketplace
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f4f7f5;
-            color: #222;
-        }
+        /* =====================================
+           MATCHING RESULTS
+           ===================================== */
 
-        header {
-            background: #14532d;
-            color: white;
-            padding: 25px;
-            text-align: center;
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 30px;
-        }
-
-        header p {
-            margin: 8px 0 0;
-            opacity: 0.9;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 1000px;
-            margin: 30px auto;
-        }
-
-        .form-card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        }
-
-        .form-card h2 {
-            margin-top: 0;
-            color: #14532d;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 18px;
-        }
-
-        .field {
-            display: flex;
-            flex-direction: column;
-        }
-
-        label {
-            font-weight: bold;
-            margin-bottom: 7px;
-        }
-
-        input,
-        select {
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 7px;
-            font-size: 15px;
-        }
-
-        button {
-            margin-top: 20px;
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            background: #16a34a;
-            color: white;
-            font-size: 17px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #15803d;
-        }
-
-        #status {
-            margin-top: 20px;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .results {
-            margin-top: 30px;
-        }
-
-        .results h2 {
-            color: #14532d;
+        .matching-results-section {
+            padding: 80px 8%;
+            background: #f5f8f5;
         }
 
         .results-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
+            gap: 25px;
+            margin-top: 35px;
         }
 
-        .project-card {
+        .match-result-card {
             background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            border-top: 5px solid #16a34a;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            border-top: 5px solid #2e7d32;
+            transition: transform 0.2s ease,
+                        box-shadow 0.2s ease;
         }
 
-        .project-card h3 {
-            margin-top: 0;
-            color: #14532d;
+        .match-result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
         }
 
-        .project-type {
+        .match-result-card h3 {
+            margin: 0 0 12px;
+            color: #1b5e20;
+            font-size: 21px;
+        }
+
+        .match-type {
             display: inline-block;
-            background: #dcfce7;
-            color: #166534;
-            padding: 5px 9px;
+            padding: 6px 10px;
             border-radius: 20px;
+            background: #e8f5e9;
+            color: #2e7d32;
             font-size: 13px;
-            margin-bottom: 12px;
-        }
-
-        .info {
-            margin: 9px 0;
-        }
-
-        .score {
-            margin-top: 15px;
-            padding: 12px;
-            background: #f0fdf4;
-            border-radius: 8px;
             font-weight: bold;
-            color: #166534;
+            margin-bottom: 15px;
+        }
+
+        .match-info {
+            margin: 10px 0;
+            color: #444;
+            line-height: 1.5;
+        }
+
+        .match-score {
+            margin-top: 18px;
+            padding: 12px;
+            border-radius: 8px;
+            background: #e8f5e9;
+            color: #1b5e20;
             text-align: center;
+            font-size: 18px;
+            font-weight: bold;
         }
 
         .no-results {
             background: white;
-            padding: 25px;
-            border-radius: 10px;
+            padding: 30px;
+            border-radius: 12px;
             text-align: center;
+            grid-column: 1 / -1;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
         }
 
-        @media (max-width: 750px) {
-            .form-grid {
-                grid-template-columns: 1fr;
+        .no-results h3 {
+            color: #1b5e20;
+            margin-bottom: 10px;
+        }
+
+        .no-results p {
+            color: #666;
+        }
+
+        .results-heading {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .results-heading .small-title {
+            margin-bottom: 10px;
+        }
+
+        .results-heading h2 {
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 900px) {
+
+            .results-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
+
+        }
+
+        @media (max-width: 600px) {
 
             .results-grid {
                 grid-template-columns: 1fr;
             }
+
+            .matching-results-section {
+                padding: 60px 5%;
+            }
+
         }
+
     </style>
+
 </head>
+
 
 <body>
 
-<header>
-    <h1>🌱 Carbon Offset Matching Engine</h1>
-    <p>Find suitable carbon projects based on your requirements</p>
-</header>
 
-<div class="container">
+    <!-- =====================================
+         NAVIGATION BAR
+         ===================================== -->
 
-    <!-- SEARCH FORM -->
+    <nav class="navbar">
 
-    <div class="form-card">
+        <div class="logo">
+            Carbon<span>Match</span>
+        </div>
 
-        <h2>Find Carbon Projects</h2>
+        <div class="nav-links">
 
-        <form id="matchForm">
+            <a href="#">
+                Home
+            </a>
 
-            <div class="form-grid">
+            <a href="#marketplace">
+                Marketplace
+            </a>
 
-                <div class="field">
-                    <label for="credits">
-                        Required Credits
-                    </label>
+            <a href="#matching">
+                Find Match
+            </a>
 
-                    <input
-                        type="number"
-                        id="credits"
-                        name="credits"
-                        placeholder="Example: 500"
-                        required
-                        min="1"
-                    >
+        </div>
+
+    </nav>
+
+
+    <!-- =====================================
+         HERO SECTION
+         ===================================== -->
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <p class="tagline">
+                CARBON OFFSET MARKETPLACE
+            </p>
+
+            <h1>
+
+                Find the right
+
+                <span>
+                    carbon projects
+                </span>
+
+            </h1>
+
+            <p class="hero-text">
+
+                Match your carbon offset requirements
+                with suitable verified carbon projects
+                using our intelligent matching engine.
+
+            </p>
+
+            <a
+                href="#matching"
+                class="hero-button"
+            >
+                Find Carbon Credits
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================
+         MATCHING SECTION
+         ===================================== -->
+
+    <section
+        id="matching"
+        class="matching-section"
+    >
+
+        <div class="section-heading">
+
+            <p class="small-title">
+                MATCHING ENGINE
+            </p>
+
+            <h2>
+                Find Your Carbon Offset
+            </h2>
+
+            <p>
+
+                Enter your requirements and our
+                algorithm will find suitable
+                carbon projects.
+
+            </p>
+
+        </div>
+
+
+        <div class="matching-card">
+
+
+            <!-- Required Credits -->
+
+            <div class="input-group">
+
+                <label for="credits">
+
+                    Required Carbon Credits
+
+                </label>
+
+                <input
+                    type="number"
+                    id="credits"
+                    placeholder="Example: 500"
+                    min="1"
+                >
+
+            </div>
+
+
+            <!-- Maximum Price -->
+
+            <div class="input-group">
+
+                <label for="price">
+
+                    Maximum Price Per Credit
+
+                </label>
+
+                <input
+                    type="number"
+                    id="price"
+                    placeholder="Example: 500"
+                    min="1"
+                    step="0.01"
+                >
+
+            </div>
+
+
+            <!-- Project Type -->
+
+            <div class="input-group">
+
+                <label for="type">
+
+                    Preferred Project Type
+
+                </label>
+
+                <select id="type">
+
+                    <option value="">
+                        Select Project Type
+                    </option>
+
+                    <option value="Renewable Energy">
+                        Renewable Energy
+                    </option>
+
+                    <option value="Forestry">
+                        Forestry
+                    </option>
+
+                    <option value="Agriculture">
+                        Agriculture
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- Location -->
+
+            <div class="input-group">
+
+                <label for="location">
+
+                    Preferred Location
+
+                </label>
+
+                <select id="location">
+
+                    <option value="">
+                        Select Location
+                    </option>
+
+                    <option value="India">
+                        India
+                    </option>
+
+                    <option value="Brazil">
+                        Brazil
+                    </option>
+
+                    <option value="USA">
+                        USA
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- Sort -->
+
+            <div class="input-group">
+
+                <label for="sort">
+
+                    Sort Results By
+
+                </label>
+
+                <select id="sort">
+
+                    <option value="score">
+                        Match Score — Highest First
+                    </option>
+
+                    <option value="price">
+                        Lowest Price
+                    </option>
+
+                    <option value="credits">
+                        Highest Credits
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- Find Button -->
+
+            <button onclick="findMatches()">
+
+                Find Matching Projects
+
+            </button>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================
+         DYNAMIC MATCHING RESULTS
+         ===================================== -->
+
+    <section
+        id="matching-results"
+        class="matching-results-section"
+    >
+
+        <div class="section-heading results-heading">
+
+            <p class="small-title">
+                MATCH RESULTS
+            </p>
+
+            <h2>
+                Recommended Carbon Projects
+            </h2>
+
+            <p>
+                Your matching results will appear here.
+            </p>
+
+        </div>
+
+
+        <div
+            id="results-container"
+            class="results-grid"
+        >
+
+            <div class="no-results">
+
+                <h3>
+                    🌱 Ready to Find a Match?
+                </h3>
+
+                <p>
+                    Enter your requirements above
+                    and click "Find Matching Projects".
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================
+         MARKETPLACE
+         ===================================== -->
+
+    <section
+        id="marketplace"
+        class="marketplace"
+    >
+
+        <div class="section-heading">
+
+            <p class="small-title">
+                CARBON MARKETPLACE
+            </p>
+
+            <h2>
+                Available Projects
+            </h2>
+
+        </div>
+
+
+        <div class="project-grid">
+
+
+            <!-- Solar Gujarat -->
+
+            <div class="project-card">
+
+                <div class="project-icon">
+                    ☀️
                 </div>
 
-                <div class="field">
-                    <label for="price">
-                        Maximum Price
-                    </label>
+                <h3>
+                    Solar Gujarat
+                </h3>
 
-                    <input
-                        type="number"
-                        id="price"
-                        name="price"
-                        placeholder="Example: 500"
-                        required
-                        min="0"
-                        step="0.01"
-                    >
-                </div>
+                <p>
+                    Renewable Energy • India
+                </p>
 
-                <div class="field">
-                    <label for="type">
-                        Project Type
-                    </label>
+                <div class="project-info">
 
-                    <select
-                        id="type"
-                        name="type"
-                        required
-                    >
-                        <option value="Renewable Energy">
-                            Renewable Energy
-                        </option>
+                    <span>
+                        1,000 Credits
+                    </span>
 
-                        <option value="Forestry">
-                            Forestry
-                        </option>
+                    <strong>
+                        ₹450
+                    </strong>
 
-                        <option value="Afforestation">
-                            Afforestation
-                        </option>
-
-                        <option value="Waste Management">
-                            Waste Management
-                        </option>
-                    </select>
-                </div>
-
-                <div class="field">
-                    <label for="location">
-                        Location
-                    </label>
-
-                    <select
-                        id="location"
-                        name="location"
-                        required
-                    >
-                        <option value="India">
-                            India
-                        </option>
-
-                        <option value="Brazil">
-                            Brazil
-                        </option>
-
-                        <option value="USA">
-                            USA
-                        </option>
-
-                        <option value="Africa">
-                            Africa
-                        </option>
-                    </select>
-                </div>
-
-                <div class="field">
-                    <label for="sort">
-                        Sort Results
-                    </label>
-
-                    <select
-                        id="sort"
-                        name="sort"
-                    >
-                        <option value="score">
-                            Best Match Score
-                        </option>
-
-                        <option value="price">
-                            Lowest Price
-                        </option>
-
-                        <option value="credits">
-                            Highest Credits
-                        </option>
-                    </select>
                 </div>
 
             </div>
 
-            <button type="submit">
-                🔍 Find Matching Projects
-            </button>
 
-        </form>
+            <!-- Wind Tamil Nadu -->
 
-        <div id="status"></div>
+            <div class="project-card">
 
-    </div>
-
-
-    <!-- RESULTS -->
-
-    <div class="results">
-
-        <h2 id="resultsTitle" style="display:none;">
-            Matching Projects
-        </h2>
-
-        <div
-            id="results"
-            class="results-grid"
-        ></div>
-
-    </div>
-
-</div>
-
-
-<script>
-
-const form = document.getElementById("matchForm");
-
-const results = document.getElementById("results");
-
-const resultsTitle =
-    document.getElementById("resultsTitle");
-
-const status =
-    document.getElementById("status");
-
-
-form.addEventListener("submit", async function(event) {
-
-    event.preventDefault();
-
-    results.innerHTML = "";
-
-    resultsTitle.style.display = "none";
-
-    status.textContent =
-        "Searching for matching projects...";
-
-
-    const formData =
-        new URLSearchParams();
-
-    formData.append(
-        "credits",
-        document.getElementById("credits").value
-    );
-
-    formData.append(
-        "price",
-        document.getElementById("price").value
-    );
-
-    formData.append(
-        "type",
-        document.getElementById("type").value
-    );
-
-    formData.append(
-        "location",
-        document.getElementById("location").value
-    );
-
-    formData.append(
-        "sort",
-        document.getElementById("sort").value
-    );
-
-
-    try {
-
-        const response =
-            await fetch("/api/match", {
-
-                method: "POST",
-
-                headers: {
-                    "Content-Type":
-                        "application/x-www-form-urlencoded"
-                },
-
-                body: formData.toString()
-            });
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                "Server returned " +
-                response.status
-            );
-        }
-
-
-        const data =
-            await response.json();
-
-
-        status.textContent = "";
-
-
-        if (
-            !data.matches ||
-            data.matches.length === 0
-        ) {
-
-            resultsTitle.style.display = "block";
-
-            results.innerHTML = `
-                <div class="no-results">
-                    <h3>No matching projects found</h3>
-                    <p>
-                        Try changing the credits,
-                        price, project type,
-                        or location.
-                    </p>
+                <div class="project-icon">
+                    💨
                 </div>
-            `;
-
-            return;
-        }
-
-
-        resultsTitle.style.display = "block";
-
-
-        data.matches.forEach(function(match) {
-
-            const card =
-                document.createElement("div");
-
-            card.className =
-                "project-card";
-
-
-            card.innerHTML = `
 
                 <h3>
-                    🌱 ${escapeHtml(match.projectName)}
+                    Wind Tamil Nadu
                 </h3>
 
-                <span class="project-type">
-                    ${escapeHtml(match.projectType)}
-                </span>
+                <p>
+                    Renewable Energy • India
+                </p>
 
-                <div class="info">
-                    📍 <strong>Location:</strong>
-                    ${escapeHtml(match.location)}
+                <div class="project-info">
+
+                    <span>
+                        2,000 Credits
+                    </span>
+
+                    <strong>
+                        ₹420
+                    </strong>
+
                 </div>
 
-                <div class="info">
-                    🌿 <strong>Credits:</strong>
-                    ${match.credits}
+            </div>
+
+
+            <!-- Forest Karnataka -->
+
+            <div class="project-card">
+
+                <div class="project-icon">
+                    🌳
                 </div>
 
-                <div class="info">
-                    💰 <strong>Price:</strong>
-                    ₹${Number(match.price).toFixed(2)}
+                <h3>
+                    Forest Karnataka
+                </h3>
+
+                <p>
+                    Forestry • India
+                </p>
+
+                <div class="project-info">
+
+                    <span>
+                        500 Credits
+                    </span>
+
+                    <strong>
+                        ₹380
+                    </strong>
+
                 </div>
 
-                <div class="info">
-                    📊 <strong>Type Score:</strong>
-                    ${match.typeScore}
+            </div>
+
+
+            <!-- Solar Rajasthan -->
+
+            <div class="project-card">
+
+                <div class="project-icon">
+                    ☀️
                 </div>
 
-                <div class="info">
-                    📍 <strong>Location Score:</strong>
-                    ${match.locationScore}
+                <h3>
+                    Solar Rajasthan
+                </h3>
+
+                <p>
+                    Renewable Energy • India
+                </p>
+
+                <div class="project-info">
+
+                    <span>
+                        800 Credits
+                    </span>
+
+                    <strong>
+                        ₹470
+                    </strong>
+
                 </div>
 
-                <div class="info">
-                    💵 <strong>Price Score:</strong>
-                    ${match.priceScore}
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================
+         FOOTER
+         ===================================== -->
+
+    <footer>
+
+        <div class="logo">
+
+            Carbon<span>Match</span>
+
+        </div>
+
+        <p>
+
+            Carbon Offset Marketplace
+            Matching Engine
+
+        </p>
+
+    </footer>
+
+
+    <!-- =====================================
+         JAVASCRIPT
+         ===================================== -->
+
+    <script>
+
+        function findMatches() {
+
+
+            // =====================================
+            // GET USER INPUT
+            // =====================================
+
+            const credits =
+                document.getElementById(
+                    "credits"
+                ).value;
+
+            const price =
+                document.getElementById(
+                    "price"
+                ).value;
+
+            const type =
+                document.getElementById(
+                    "type"
+                ).value;
+
+            const location =
+                document.getElementById(
+                    "location"
+                ).value;
+
+            const sort =
+                document.getElementById(
+                    "sort"
+                ).value;
+
+
+            // =====================================
+            // VALIDATION
+            // =====================================
+
+            if (
+                !credits ||
+                !price ||
+                !type ||
+                !location
+            ) {
+
+                alert(
+                    "Please fill in all fields."
+                );
+
+                return;
+            }
+
+
+            if (
+                Number(credits) <= 0
+            ) {
+
+                alert(
+                    "Credits must be greater than 0."
+                );
+
+                return;
+            }
+
+
+            if (
+                Number(price) <= 0
+            ) {
+
+                alert(
+                    "Price must be greater than 0."
+                );
+
+                return;
+            }
+
+
+            // =====================================
+            // CREATE FORM DATA
+            // =====================================
+
+            const formData =
+                new URLSearchParams();
+
+
+            formData.append(
+                "credits",
+                credits
+            );
+
+
+            formData.append(
+                "price",
+                price
+            );
+
+
+            formData.append(
+                "type",
+                type
+            );
+
+
+            formData.append(
+                "location",
+                location
+            );
+
+
+            formData.append(
+                "sort",
+                sort
+            );
+
+
+            // =====================================
+            // GET RESULTS CONTAINER
+            // =====================================
+
+            const resultsContainer =
+                document.getElementById(
+                    "results-container"
+                );
+
+
+            // =====================================
+            // SHOW LOADING
+            // =====================================
+
+            resultsContainer.innerHTML = `
+
+                <div class="no-results">
+
+                    <h3>
+                        🔍 Finding matching projects...
+                    </h3>
+
+                    <p>
+                        Please wait.
+                    </p>
+
                 </div>
 
-                <div class="info">
-                    🌿 <strong>Availability Score:</strong>
-                    ${match.availabilityScore}
-                </div>
-
-                <div class="score">
-                    ⭐ Match Score:
-                    ${match.score}
-                </div>
             `;
 
 
-            results.appendChild(card);
+            // =====================================
+            // SCROLL TO RESULTS
+            // =====================================
 
-        });
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-        status.textContent =
-            "Could not connect to the Java server.";
-
-        results.innerHTML = "";
-
-    }
-
-});
+            document
+                .getElementById(
+                    "matching-results"
+                )
+                .scrollIntoView({
+                    behavior: "smooth"
+                });
 
 
-function escapeHtml(value) {
+            // =====================================
+            // SEND REQUEST TO JAVA SERVER
+            // =====================================
 
-    return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
+            fetch(
+                "/api/match",
+                {
 
-</script>
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/x-www-form-urlencoded"
+
+                    },
+
+                    body:
+                        formData.toString()
+
+                }
+            )
+
+
+            // =====================================
+            // SERVER RESPONSE
+            // =====================================
+
+            .then(
+                response => {
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            "Server error: " +
+                            response.status
+                        );
+
+                    }
+
+                    return response.json();
+
+                }
+            )
+
+
+            // =====================================
+            // DISPLAY RESULTS
+            // =====================================
+
+            .then(
+                data => {
+
+                    resultsContainer.innerHTML = "";
+
+
+                    // No results
+
+                    if (
+                        !data.matches ||
+                        data.matches.length === 0
+                    ) {
+
+                        resultsContainer.innerHTML = `
+
+                            <div class="no-results">
+
+                                <h3>
+                                    No matching projects found
+                                </h3>
+
+                                <p>
+                                    Try changing your
+                                    credits, price,
+                                    project type,
+                                    or location.
+                                </p>
+
+                            </div>
+
+                        `;
+
+                        return;
+                    }
+
+
+                    // =====================================
+                    // CREATE PROJECT CARDS
+                    // =====================================
+
+                    data.matches.forEach(
+                        match => {
+
+                            const card =
+                                document.createElement(
+                                    "div"
+                                );
+
+
+                            card.className =
+                                "match-result-card";
+
+
+                            card.innerHTML = `
+
+                                <h3>
+                                    🌱
+                                    ${escapeHtml(
+                                        match.projectName
+                                    )}
+                                </h3>
+
+
+                                <div class="match-type">
+
+                                    ${escapeHtml(
+                                        match.projectType
+                                    )}
+
+                                </div>
+
+
+                                <div class="match-info">
+
+                                    📍
+                                    <strong>
+                                        Location:
+                                    </strong>
+
+                                    ${escapeHtml(
+                                        match.location
+                                    )}
+
+                                </div>
+
+
+                                <div class="match-info">
+
+                                    🌿
+                                    <strong>
+                                        Credits:
+                                    </strong>
+
+                                    ${match.credits}
+
+                                </div>
+
+
+                                <div class="match-info">
+
+                                    💰
+                                    <strong>
+                                        Price:
+                                    </strong>
+
+                                    ₹${Number(
+                                        match.price
+                                    ).toFixed(2)}
+
+                                </div>
+
+
+                                <div class="match-info">
+
+                                    🎯
+                                    <strong>
+                                        Type Score:
+                                    </strong>
+
+                                    ${match.typeScore}
+
+                                </div>
+
+
+                                <div class="match-info">
+
+                                    📍
+                                    <strong>
+                                        Location Score:
+                                    </strong>
+
+                                    ${match.locationScore}
+
+                                </div>
+
+
+                                <div class="match-info">
+
+                                    💵
+                                    <strong>
+                                        Price Score:
+                                    </strong>
+
+                                    ${match.priceScore}
+
+                                </div>
+
+
+                                <div class="match-info">
+
+                                    🌿
+                                    <strong>
+                                        Availability Score:
+                                    </strong>
+
+                                    ${match.availabilityScore}
+
+                                </div>
+
+
+                                <div class="match-score">
+
+                                    ⭐ Match Score:
+
+                                    ${match.score}
+
+                                </div>
+
+                            `;
+
+
+                            resultsContainer.appendChild(
+                                card
+                            );
+
+                        }
+                    );
+
+                }
+            )
+
+
+            // =====================================
+            // ERROR HANDLING
+            // =====================================
+
+            .catch(
+                error => {
+
+                    console.error(
+                        error
+                    );
+
+
+                    resultsContainer.innerHTML = `
+
+                        <div class="no-results">
+
+                            <h3>
+                                ❌ Could not connect
+                                to the Java server
+                            </h3>
+
+                            <p>
+                                Please try again.
+                            </p>
+
+                        </div>
+
+                    `;
+
+                }
+            );
+
+        }
+
+
+        // =====================================
+        // HTML ESCAPE
+        // =====================================
+
+        function escapeHtml(value) {
+
+            return String(value)
+
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
+        }
+
+    </script>
+
 
 </body>
+
 </html>

@@ -19,7 +19,7 @@ public class MatchingEngine {
     static String username = "avnadmin";
 
     // PUT YOUR CURRENT AIVEN PASSWORD HERE
-    static String password = "DB_Password";
+ static String password = System.getenv("DB_PASSWORD");
 
 
     // ==============================

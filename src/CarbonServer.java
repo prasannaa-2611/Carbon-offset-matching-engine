@@ -5,8 +5,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.PriorityQueue;
 
 public class CarbonServer {
 
@@ -22,6 +24,7 @@ public class CarbonServer {
         );
 
         server.createContext("/", CarbonServer::handleRequest);
+        server.createContext("/api/match", CarbonServer::handleMatch);
 
         server.setExecutor(null);
 
@@ -30,7 +33,8 @@ public class CarbonServer {
         server.start();
     }
 
-    private static void handleRequest(HttpExchange exchange) throws IOException {
+    private static void handleRequest(HttpExchange exchange)
+            throws IOException {
 
         String path = exchange.getRequestURI().getPath();
 
@@ -41,12 +45,13 @@ public class CarbonServer {
         File file = new File("web" + path);
 
         if (!file.exists() || file.isDirectory()) {
+
             String response = "404 - Page Not Found";
 
             exchange.sendResponseHeaders(404, response.length());
 
             try (OutputStream os = exchange.getResponseBody()) {
-                os.write(response.getBytes());
+                os.write(response.getBytes(StandardCharsets.UTF_8));
             }
 
             return;
@@ -77,5 +82,214 @@ public class CarbonServer {
         try (OutputStream os = exchange.getResponseBody()) {
             os.write(response);
         }
+    }
+
+    private static void handleMatch(HttpExchange exchange)
+            throws IOException {
+
+        if (!exchange.getRequestMethod().equalsIgnoreCase("POST")) {
+
+            String response = "Method Not Allowed";
+
+            exchange.sendResponseHeaders(405, response.length());
+
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(response.getBytes(StandardCharsets.UTF_8));
+            }
+
+            return;
+        }
+
+        try {
+
+            String body = new String(
+                    exchange.getRequestBody().readAllBytes(),
+                    StandardCharsets.UTF_8
+            );
+
+            System.out.println("Received request: " + body);
+
+            int credits = getInt(body, "credits");
+            double price = getDouble(body, "price");
+            String type = getString(body, "type");
+            String location = getString(body, "location");
+            String sort = getString(body, "sort");
+
+            PriorityQueue<MatchingEngine.Match> matches =
+                    MatchingEngine.findMatches(
+                            credits,
+                            price,
+                            type,
+                            location
+                    );
+
+            matches = MatchingEngine.sortMatches(matches, sort);
+
+            StringBuilder json = new StringBuilder();
+
+            json.append("{\"matches\":[");
+
+            boolean first = true;
+            int count = 0;
+
+            while (!matches.isEmpty() && count < 10) {
+
+                MatchingEngine.Match match = matches.poll();
+
+                if (!first) {
+                    json.append(",");
+                }
+
+                first = false;
+
+                json.append("{");
+
+                json.append("\"projectName\":\"")
+                        .append(escapeJson(match.getProjectName()))
+                        .append("\",");
+
+                json.append("\"projectType\":\"")
+                        .append(escapeJson(match.getProjectType()))
+                        .append("\",");
+
+                json.append("\"location\":\"")
+                        .append(escapeJson(match.getLocation()))
+                        .append("\",");
+
+                json.append("\"credits\":")
+                        .append(match.getCredits())
+                        .append(",");
+
+                json.append("\"price\":")
+                        .append(match.getPrice())
+                        .append(",");
+
+                json.append("\"typeScore\":")
+                        .append(match.getTypeScore())
+                        .append(",");
+
+                json.append("\"locationScore\":")
+                        .append(match.getLocationScore())
+                        .append(",");
+
+                json.append("\"priceScore\":")
+                        .append(match.getPriceScore())
+                        .append(",");
+
+                json.append("\"availabilityScore\":")
+                        .append(match.getAvailabilityScore())
+                        .append(",");
+
+                json.append("\"score\":")
+                        .append(match.getScore());
+
+                json.append("}");
+
+                count++;
+            }
+
+            json.append("]}");
+
+            sendJson(exchange, 200, json.toString());
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            String error =
+                    "{\"error\":\"Server error while finding matches\"}";
+
+            sendJson(exchange, 500, error);
+        }
+    }
+
+    private static int getInt(String json, String key) {
+
+        String value = getString(json, key);
+
+        return Integer.parseInt(value);
+    }
+
+    private static double getDouble(String json, String key) {
+
+        String value = getString(json, key);
+
+        return Double.parseDouble(value);
+    }
+
+    private static String getString(String json, String key) {
+
+        String search = "\"" + key + "\":";
+
+        int start = json.indexOf(search);
+
+        if (start == -1) {
+            return "";
+        }
+
+        start += search.length();
+
+        while (start < json.length()
+                && Character.isWhitespace(json.charAt(start))) {
+            start++;
+        }
+
+        if (start < json.length()
+                && json.charAt(start) == '"') {
+
+            start++;
+
+            int end = json.indexOf("\"", start);
+
+            if (end == -1) {
+                return "";
+            }
+
+            return json.substring(start, end);
+        }
+
+        int end = start;
+
+        while (end < json.length()
+                && json.charAt(end) != ','
+                && json.charAt(end) != '}') {
+            end++;
+        }
+
+        return json.substring(start, end).trim();
+    }
+
+    private static void sendJson(
+            HttpExchange exchange,
+            int status,
+            String json) throws IOException {
+
+        exchange.getResponseHeaders().set(
+                "Content-Type",
+                "application/json"
+        );
+
+        byte[] response =
+                json.getBytes(StandardCharsets.UTF_8);
+
+        exchange.sendResponseHeaders(
+                status,
+                response.length
+        );
+
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(response);
+        }
+    }
+
+    private static String escapeJson(String value) {
+
+        if (value == null) {
+            return "";
+        }
+
+        return value
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"");
     }
 }
